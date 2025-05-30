@@ -1,9 +1,10 @@
 from asyncio import sleep
 
 from aiogram import Router, F
+from aiogram.filters import CommandStart, Command, or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
-from aiogram_renderer.example.windows import alert_mode
+from example.windows import alert_mode
 from aiogram_renderer.filters import IsMode
 from aiogram_renderer.renderer import Renderer
 from states import MenuStates
@@ -14,7 +15,7 @@ router.message.filter(F.chat.type == "private")
 router.callback_query.filter(F.message.chat.type == "private")
 
 
-@router.message(F.text.in_({"/start", "/restart"}))
+@router.message(or_f(CommandStart(), Command('restart')))
 async def start(message: Message, renderer: Renderer):
     data = {"username": f" {message.from_user.username}" if message.from_user else "",
                   "test_show_on": False,
@@ -31,7 +32,7 @@ async def start(message: Message, renderer: Renderer):
                       "data": ["3", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]}}
 
     async with aioopen(file="test.png", mode="rb") as f:
-        message2, window = await renderer.answer(
+        sent_message, window = await renderer.answer(
             window=MenuStates.main1,
             chat_id=message.chat.id,
             data=data,
@@ -39,8 +40,8 @@ async def start(message: Message, renderer: Renderer):
         )
 
         for i in range(99):
-            await renderer.update_progress(window=MenuStates.main1, chat_id=message2.chat.id, interval=0.3,
-                                           message_id=message2.message_id, name="test_pr", percent=i, data=data)
+            await renderer.update_progress(window=MenuStates.main1, chat_id=sent_message.chat.id, interval=0.3,
+                                           message_id=sent_message.message_id, name="test_pr", percent=i, data=data)
             await sleep(0.3)
 
 

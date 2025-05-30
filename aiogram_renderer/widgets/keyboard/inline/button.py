@@ -1,7 +1,9 @@
 from typing import Any
 from aiogram.fsm.state import State
 from aiogram.types import InlineKeyboardButton
-from aiogram_renderer.widgets.widget import Widget
+
+from aiogram_renderer.callback_data import ComeToCD, ModeCD
+from aiogram_renderer.widgets import Widget
 
 
 class Button(Widget):
@@ -36,7 +38,7 @@ class Mode(Button):
 
     def __init__(self, name: str, show_on: str = None):
         self.name = name
-        super().__init__(text=name, data=f"__mode__:{name}", show_on=show_on)
+        super().__init__(text=name, data=ModeCD(name=name).pack(), show_on=show_on)
 
     async def assemble(self, data: dict[str, Any], **kwargs) -> Any:
         """
@@ -70,4 +72,4 @@ class ComeTo(Button):
     __slots__ = ()
 
     def __init__(self, text: str, state: State, show_on: str = None):
-        super().__init__(text=text, data=f"__cometo__:{state.state}", show_on=show_on)
+        super().__init__(text=text, data=ComeToCD(group=state.group.__name__, state=state._state).pack(), show_on=show_on)

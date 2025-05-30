@@ -11,7 +11,7 @@ from redis.asyncio import Redis
 import routers
 from aiogram_renderer.bot_mode import BotMode
 from aiogram_renderer.configure import configure_renderer
-from aiogram_renderer.example.windows import main_window, alert_mode, main_window2
+from example.windows import main_window, alert_mode, main_window2
 
 load_dotenv()
 

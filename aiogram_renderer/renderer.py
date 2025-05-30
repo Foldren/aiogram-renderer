@@ -8,9 +8,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InputMediaPhoto, InputMediaVideo, InputMediaAudio, InputMediaDocument
 from .bot_mode import BotModes
 from .enums import RenderMode
-from .widgets.inline.panel import DynamicPanel
-from .widgets.media.bytes import FileBytes, AudioBytes, VideoBytes, PhotoBytes
-from .widgets.media.path import File, Audio, Video, Photo
+from .widgets.keyboard.inline import DynamicPanel
+from .widgets.media import FileBytes, AudioBytes, VideoBytes, PhotoBytes, File, Audio, Video, Photo
 from .window import Window, Alert
 
 
@@ -113,7 +112,8 @@ class Renderer:
         for i, window in enumerate(self.windows, start=1):
             if window._state == state:
                 return window
-            assert i != len(self.windows), ValueError("Окно не за задано в конфигурации")
+            if i == len(self.windows):
+                raise ValueError("Окно не за задано в конфигурации")
 
     async def _switch_dynamic_panel_page(self, name: str, page: int):
         """
@@ -241,8 +241,10 @@ class Renderer:
         :return:
         """
         if message_id is None:
-            assert mode != RenderMode.REPLY, ValueError("message_id is required on REPLY mode")
-            assert mode != RenderMode.DELETE_AND_SEND, ValueError("message_id is required on mode DELETE_AND_SEND")
+            if mode == RenderMode.REPLY:
+                raise ValueError("message_id is required on REPLY mode")
+            if mode == RenderMode.DELETE_AND_SEND:
+                raise ValueError("message_id is required on mode DELETE_AND_SEND")
 
         if isinstance(window, Alert):
             fsm_data = await self.fsm.get_data()

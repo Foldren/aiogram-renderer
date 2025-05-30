@@ -1,15 +1,17 @@
 from typing import Any
 from aiogram.types import KeyboardButton
-from aiogram_renderer.widgets.reply.button import ReplyButton
-from aiogram_renderer.widgets.widget import Widget
+from aiogram_renderer.widgets.keyboard.reply import ReplyButton
+from aiogram_renderer.widgets import Widget
 
 
 class ReplyPanel(Widget):
     __slots__ = ("buttons", "width")
 
     def __init__(self, *buttons: ReplyButton, width: int = 1, show_on: str = None):
-        assert width >= 1, ValueError("Ширина группы должна быть не меньше 1")
-        assert width <= 12, ValueError("У Telegram ограничение на длину ReplyKeyboard - 12 кнопок")
+        if width < 1:
+            raise ValueError("Ширина группы должна б��ть не меньше 1")
+        if width > 12:
+            raise ValueError("У Telegram ограничение на длину ReplyKeyboard - 12 кнопок")
         self.buttons = list(buttons)
         self.width = width
         super().__init__(show_on=show_on)

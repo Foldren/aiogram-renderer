@@ -1,7 +1,7 @@
 from typing import Any
 from aiogram.types import FSInputFile
 from aiogram_renderer.widgets.text import Text, Area
-from aiogram_renderer.widgets.widget import Widget
+from aiogram_renderer.widgets import Widget
 
 
 class File(Widget):

@@ -1,7 +1,6 @@
 from states import MenuStates
-from aiogram_renderer.widgets.inline.button import Mode, ComeTo
-from aiogram_renderer.widgets.inline.panel import DynamicPanel
-from aiogram_renderer.widgets.reply.button import ReplyMode
+from aiogram_renderer.widgets.keyboard.inline import Mode, ComeTo, DynamicPanel
+from aiogram_renderer.widgets.keyboard.reply import ReplyMode
 from aiogram_renderer.widgets.text import Area, Bold, Text, Progress
 from aiogram_renderer.window import Window, Alert
 

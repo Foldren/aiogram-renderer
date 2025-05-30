@@ -1,6 +1,6 @@
 from typing import Any
 from aiogram.fsm.context import FSMContext
-from .widgets.media.bytes import FileBytes
+from .widgets.media import FileBytes
 from .window import Alert
 
 
@@ -14,7 +14,8 @@ class BotMode:
 
     def __init__(self, name: str, values: list[str], alert_window: Alert, has_custom_handler: bool = False):
         for widget in alert_window._widgets:
-            assert not isinstance(widget, FileBytes), ValueError("В alert_window не может быть файл с байтами")
+            if isinstance(widget, FileBytes):
+                raise ValueError("В alert_window не может быть файл с байтами")
 
         self.name = name
         self.values = values
@@ -116,7 +117,8 @@ class BotModes:
 
     async def get_active_value(self, name: str) -> None:
         dict_modes = await self.get_dict_modes()
-        assert dict_modes[name], ValueError("У бота нет данного режима")
+        if not dict_modes.get(name):
+            raise ValueError("У бота нет данного режима")
         fsm_modes = await self.get_fsm_modes()
         # Активным считается первое значение режима
         return fsm_modes[name][0]

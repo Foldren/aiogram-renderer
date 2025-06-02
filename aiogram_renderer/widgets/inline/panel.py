@@ -19,11 +19,8 @@ class Panel(Widget):
         super().__init__(show_on=show_on)
 
     async def assemble(self, data: dict[str, Any], **kwargs) -> list[list[InlineKeyboardButton]]:
-        if self.show_on.replace("!", "") in data.keys():
-            if (self.show_on[0] != "!") and (not data[self.show_on]):
-                return [[]]
-            elif (self.show_on[0] == "!") and (data[self.show_on]):
-                return [[]]
+        if not (await self.is_show_on(data)):
+            return [[]]
 
         # Собираем объект группы кнопок Telegram
         buttons_rows = [[]]
@@ -83,11 +80,8 @@ class DynamicPanel(Widget):
         self.hide_number_pages = hide_number_pages
 
     async def assemble(self, data: dict[str, Any], **kwargs) -> list[list[Any]]:
-        if self.show_on.replace("!", "") in data.keys():
-            if (self.show_on[0] != "!") and (not data[self.show_on]):
-                return [[]]
-            elif (self.show_on[0] == "!") and (data[self.show_on]):
-                return [[]]
+        if not (await self.is_show_on(data)):
+            return [[]]
 
         fsm_group: dict[str, Any] = kwargs["dpanels"][self.name]
         page = fsm_group["page"]

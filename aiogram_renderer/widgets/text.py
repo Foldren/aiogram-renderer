@@ -13,11 +13,8 @@ class Text(Widget):
         super().__init__(show_on=show_on)
 
     async def assemble(self, data: dict[str, Any]) -> str:
-        if self.show_on.replace("!", "") in data.keys():
-            if (self.show_on[0] != "!") and (not data[self.show_on]):
-                return ""
-            elif (self.show_on[0] == "!") and (data[self.show_on]):
-                return ""
+        if not (await self.is_show_on(data)):
+            return ""
 
         text = self.content
         # Форматируем по data, если там заданы ключи {key}
@@ -41,13 +38,10 @@ class Area(Widget):
         super().__init__(show_on=show_on)
 
     async def assemble(self, data: dict[str, Any]):
-        if self.show_on.replace("!", "") in data.keys():
-            if (self.show_on[0] != "!") and (not data[self.show_on]):
-                return ""
-            elif (self.show_on[0] == "!") and (data[self.show_on]):
-                return ""
+        if not (await self.is_show_on(data)):
+            return ""
 
-        # Формируем разделители, учитывая их количество и после содержимое
+            # Формируем разделители, учитывая их количество и после содержимое
         separators = "".join([self.sep for _ in range(self.sep_count)])
 
         texts_list = []
@@ -138,11 +132,8 @@ class Progress(Widget):
         super().__init__(show_on=show_on)
 
     async def assemble(self, data: dict[str, Any]):
-        if self.show_on.replace("!", "") in data.keys():
-            if (self.show_on[0] != "!") and (not data[self.show_on]):
-                return ""
-            elif (self.show_on[0] == "!") and (data[self.show_on]):
-                return ""
+        if not (await self.is_show_on(data)):
+            return ""
 
         percent = data[self.name] if self.name in data else 0
         assert 0.0 <= percent <= 100.0, ValueError("Процент должен быть в промежутке от 0 до 100")

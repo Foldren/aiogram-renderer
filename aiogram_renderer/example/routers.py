@@ -17,18 +17,18 @@ router.callback_query.filter(F.message.chat.type == "private")
 @router.message(F.text.in_({"/start", "/restart"}))
 async def start(message: Message, renderer: Renderer):
     data = {"username": f" {message.from_user.username}" if message.from_user else "",
-                  "test_show_on": False,
-                  'test_pr': 0,
-                  "path": "test23225",
-                  'filename': 'test.png',
-                  "test_dg": {
-                      "page": 2,
-                      "text": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"],
-                      "data": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]},
-                  "test_dg2": {
-                      "page": 2,
-                      "text": ["3", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"],
-                      "data": ["3", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]}}
+            "test_show_on": False,
+            'test_pr': 0,
+            "path": "test23225",
+            'filename': 'test.png',
+            "test_dg": {
+                "page": 2,
+                "text": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"],
+                "data": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]},
+            "test_dg2": {
+                "page": 2,
+                "text": ["3", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"],
+                "data": ["3", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]}}
 
     async with aioopen(file="test.png", mode="rb") as f:
         message2, window = await renderer.answer(
@@ -38,10 +38,10 @@ async def start(message: Message, renderer: Renderer):
             file_bytes={'test_fb': await f.read()}
         )
 
-        for i in range(99):
-            await renderer.update_progress(window=MenuStates.main1, chat_id=message2.chat.id, interval=0.3,
-                                           message_id=message2.message_id, name="test_pr", percent=i, data=data)
-            await sleep(0.3)
+        # for i in range(99):
+        #     await renderer.update_progress(window=MenuStates.main1, chat_id=message2.chat.id, interval=0.3,
+        #                                    message_id=message2.message_id, name="test_pr", percent=i, data=data)
+        #     await sleep(0.3)
 
 
 # @router.callback_query(IsMode("decoder_h263"))

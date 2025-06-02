@@ -13,9 +13,10 @@ class Button(Widget):
         super().__init__(show_on=show_on)
 
     async def assemble(self, data: dict[str, Any], **kwargs) -> InlineKeyboardButton | None:
-        if self.show_on in data.keys():
-            # Если when = False, не собираем кнопку и возвращаем None
-            if not data[self.show_on]:
+        if self.show_on.replace("!", "") in data.keys():
+            if (self.show_on[0] != "!") and (not data[self.show_on]):
+                return None
+            elif (self.show_on[0] == "!") and (data[self.show_on]):
                 return None
 
         text = self.text
@@ -43,9 +44,10 @@ class Mode(Button):
         Берем активное [0] значение режима из fsm
         :param data: данные окна
         """
-        if self.show_on in data.keys():
-            # Если when = False, не собираем кнопку и возвращаем None
-            if not data[self.show_on]:
+        if self.show_on.replace("!", "") in data.keys():
+            if (self.show_on[0] != "!") and (not data[self.show_on]):
+                return None
+            elif (self.show_on[0] == "!") and (data[self.show_on]):
                 return None
 
         text = kwargs["modes"][self.name][0]

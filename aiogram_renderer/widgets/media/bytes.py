@@ -23,9 +23,10 @@ class FileBytes(Widget):
         self.media_caption = media_caption
 
     async def assemble(self, data: dict[str, Any], **kwargs) -> tuple[BufferedInputFile | None, str]:
-        if self.show_on in data.keys():
-            # Если show_on = False, не собираем кнопку и возвращаем None
-            if not data[self.show_on]:
+        if self.show_on.replace("!", "") in data.keys():
+            if (self.show_on[0] != "!") and (not data[self.show_on]):
+                return None, ""
+            elif (self.show_on[0] == "!") and (data[self.show_on]):
                 return None, ""
 
         file_name = self.file_name

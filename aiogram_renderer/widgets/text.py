@@ -13,9 +13,10 @@ class Text(Widget):
         super().__init__(show_on=show_on)
 
     async def assemble(self, data: dict[str, Any]) -> str:
-        if self.show_on in data.keys():
-            # Если show_on = False, не собираем текст и возвращаем пустую строку
-            if not data[self.show_on]:
+        if self.show_on.replace("!", "") in data.keys():
+            if (self.show_on[0] != "!") and (not data[self.show_on]):
+                return ""
+            elif (self.show_on[0] == "!") and (data[self.show_on]):
                 return ""
 
         text = self.content
@@ -40,9 +41,10 @@ class Area(Widget):
         super().__init__(show_on=show_on)
 
     async def assemble(self, data: dict[str, Any]):
-        if self.show_on in data.keys():
-            # Если show_on = False, не собираем Area
-            if not data[self.show_on]:
+        if self.show_on.replace("!", "") in data.keys():
+            if (self.show_on[0] != "!") and (not data[self.show_on]):
+                return ""
+            elif (self.show_on[0] == "!") and (data[self.show_on]):
                 return ""
 
         # Формируем разделители, учитывая их количество и после содержимое
@@ -136,9 +138,10 @@ class Progress(Widget):
         super().__init__(show_on=show_on)
 
     async def assemble(self, data: dict[str, Any]):
-        if self.show_on in data.keys():
-            # Если show_on = False, не собираем Area
-            if not data[self.show_on]:
+        if self.show_on.replace("!", "") in data.keys():
+            if (self.show_on[0] != "!") and (not data[self.show_on]):
+                return ""
+            elif (self.show_on[0] == "!") and (data[self.show_on]):
                 return ""
 
         percent = data[self.name] if self.name in data else 0

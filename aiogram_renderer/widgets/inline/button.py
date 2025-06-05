@@ -67,3 +67,31 @@ class ComeTo(Button):
 
     def __init__(self, text: str, state: State, show_on: str = None):
         super().__init__(text=text, data=f"__cometo__:{state.state}", show_on=show_on)
+
+
+class Url(Button):
+    __slots__ = ("url",)
+
+    def __init__(self, text: str, url: str, data: str = None, show_on: str = None):
+        self.url = url
+        super().__init__(text=text, data=data, show_on=show_on)
+
+    async def assemble(self, data: dict[str, Any], **kwargs) -> InlineKeyboardButton | None:
+        if not (await self.is_show_on(data)):
+            return None
+
+        text = self.text
+        btn_data = self.data
+        url = self.url
+
+        # Форматируем по data, если там заданы ключи {key}
+        for key, value in data.items():
+            if "{" + key + "}" in text:
+                text = text.replace("{" + key + "}", str(value))
+            if btn_data is not None:
+                if "{" + key + "}" in btn_data:
+                    btn_data = btn_data.replace("{" + key + "}", str(value))
+            if "{" + key + "}" in url:
+                url = url.replace("{" + key + "}", str(value))
+
+        return InlineKeyboardButton(text=text, url=url, callback_data=btn_data)

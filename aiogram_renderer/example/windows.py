@@ -1,5 +1,5 @@
 from states import MenuStates
-from aiogram_renderer.widgets.inline.button import Mode, ComeTo
+from aiogram_renderer.widgets.inline.button import Mode, ComeTo, Url
 from aiogram_renderer.widgets.inline.panel import DynamicPanel
 from aiogram_renderer.widgets.reply.button import ReplyMode
 from aiogram_renderer.widgets.text import Area, Bold, Text, Progress
@@ -21,6 +21,7 @@ main_window = Window(
         height=2,
         hide_number_pages=True
     ),
+    Url(text="text", url="https://google.com"),
     ComeTo(text="Перейти в меню 2", state=MenuStates.main2, show_on="test_show_on"),
     Progress(name="test_pr", add_percent=True, prefix="\n"),
     state=MenuStates.main1,

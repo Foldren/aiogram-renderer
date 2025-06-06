@@ -202,9 +202,12 @@ class Renderer:
                 message = None
 
         else:
-            # Если режим DELETE_AND_SEND - удаляем сообщение и убираем reply_to_message_id
+            # Если режим DELETE_AND_SEND - удаляем сообщение
             if mode == RenderMode.DELETE_AND_SEND:
                 await self.bot.delete_message(chat_id=chat_id, message_id=message_id)
+
+            # Если режим не REPLY - удаляем id REPLY сообщения
+            if mode != RenderMode.REPLY:
                 message_id = None
 
             # В режимах ANSWER, REPLY - отправляем сообщение с media

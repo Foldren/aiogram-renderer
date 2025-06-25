@@ -30,12 +30,13 @@ class ReplyPanel(Widget):
                     continue
 
             button_obj = await button.assemble(data=data, **kwargs)
-            if j % self.width == 0 and j != 0:
-                buttons_rows.append([button_obj])
-                k += 1
-            else:
-                buttons_rows[k].append(button_obj)
-            j += 1
+            if button_obj is not None:
+                if j % self.width == 0 and j != 0:
+                    buttons_rows.append([button_obj])
+                    k += 1
+                else:
+                    buttons_rows[k].append(button_obj)
+                j += 1
         return buttons_rows
 
 

@@ -184,6 +184,7 @@ class Renderer:
         # По умолчанию берем тот текст, что задан в виджетах окна, media_caption будет использоваться для
         # медиа групп
         file_obj, caption_text = await file.assemble(data=data, file_bytes=file_bytes)
+        message = None
 
         if mode == RenderMode.EDIT:
             if isinstance(file, (Photo, PhotoBytes)):
@@ -199,7 +200,7 @@ class Renderer:
                                                             reply_markup=reply_markup, media=input_media)
             # Если нет медиафайла пропускаем ошибку
             except Exception:
-                message = None
+                pass
 
         else:
             # Если режим DELETE_AND_SEND - удаляем сообщение

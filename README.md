@@ -1,7 +1,7 @@
 # aiogram-renderer
-[![versions](https://badgen.net/badge/python/3.9-3.12?color=green)](https://github.com/Foldren/aiogram-renderer)
+[![versions](https://badgen.net/badge/python/3.9+?color=green)](https://github.com/Foldren/aiogram-renderer)
 [![license](https://badgen.net/badge/license/Apache-2.0?color=green)](https://github.com/Foldren/aiogram-renderer/blob/master/LICENSE)
-[![license](https://badgen.net/badge/pypl/v1.3.4?color=blue)](https://pypi.org/project/aiogram-renderer)
+[![license](https://badgen.net/badge/pypl/v1.3.7?color=blue)](https://pypi.org/project/aiogram-renderer)
 [![badge](https://badgen.net/badge/_/Donate?color=yellow&icon=ruby&label)](https://t.me/foldren_support_donat_bot)
 
 ## О проекте

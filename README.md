@@ -89,7 +89,8 @@ alert = Alert(
 ```
 ## Отправка
 Для отправки сообщений из собранных окон с виджетами, используйте функции render из встроенного аргумента renderer с mode=RenderMode.ANSWER и др. или
-более быстрые answer, edit, delete_and_send, reply.
+более быстрые answer, edit, delete_and_send, reply. Вы можете использовать chat_id, message_id или event по желанию,
+по умолчанию renderer подхватывает event в хендлере.
 ```python
 @dp.message(F.text=="/start")
 async def start(message: Message, renderer: Renderer):

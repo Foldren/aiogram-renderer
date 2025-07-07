@@ -1,10 +1,12 @@
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, Coroutine
 from aiogram.client.default import Default
 from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InputMediaPhoto, InputMediaVideo, InputMediaAudio, InputMediaDocument, Update
+
+from aiogram_renderer.window import Window
 from .bot_mode import BotModes
 from .enums import RenderMode
 from .widgets.inline.panel import DynamicPanel
@@ -104,7 +106,7 @@ class Renderer:
 
         return window_data, fsm_data
 
-    async def __get_window_by_state(self, state: str) -> Window:
+    async def __get_window_by_state(self, state: str) -> Window | None:
         """
         Функция для получения объекта окна по FSM State, окна задаются в configure_renderer
         :param state: FSM State
@@ -114,6 +116,7 @@ class Renderer:
             if window._state == state:
                 return window
             assert i != len(self.windows), ValueError("Окно не за задано в конфигурации")
+        return None
 
     async def _switch_dynamic_panel_page(self, name: str, page: int):
         """
@@ -268,8 +271,8 @@ class Renderer:
         # Первым в приоритете event объекта Renderer
         if (event is None) and (chat_id is None) and (message_id is None):
             try:
-                message_id = self.event.message_id
-                chat_id = self.event.chat.id
+                message_id = self.event.message.message_id
+                chat_id = self.event.message.chat.id
             except:
                 message_id = self.event.callback_query.message.message_id
                 chat_id = self.event.callback_query.message.chat.id

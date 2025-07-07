@@ -1,11 +1,10 @@
 from datetime import datetime, timedelta
 from typing import Any
-from aiogram import Bot
 from aiogram.client.default import Default
 from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, InputMediaPhoto, InputMediaVideo, InputMediaAudio, InputMediaDocument
+from aiogram.types import Message, InputMediaPhoto, InputMediaVideo, InputMediaAudio, InputMediaDocument, Update
 from .bot_mode import BotModes
 from .enums import RenderMode
 from .widgets.inline.panel import DynamicPanel
@@ -15,10 +14,11 @@ from .window import Window, Alert
 
 
 class Renderer:
-    __slots__ = ('bot', 'windows', 'fsm', 'bot_modes', 'progress_updates')
+    __slots__ = ('event', 'bot', 'windows', 'fsm', 'bot_modes', 'progress_updates')
 
-    def __init__(self, bot: Bot, windows: list[Window], fsm: FSMContext = None, bot_modes: BotModes = None):
-        self.bot = bot
+    def __init__(self, event: Update, windows: list[Window], fsm: FSMContext = None, bot_modes: BotModes = None):
+        self.event = event
+        self.bot = event.bot
         self.windows = windows
         self.fsm = fsm
         self.bot_modes = bot_modes
@@ -126,20 +126,35 @@ class Renderer:
         fsm_data["__dpanels__"][name]["page"] = page
         await self.fsm.set_data(fsm_data)
 
-    async def update_progress(self, window: str | Alert | Window, chat_id: int, message_id: int, name: str, percent: float,
-                              data: dict[str, Any], interval: float = 0.5) -> Message | None:
+    async def update_progress(self, window: str | Alert | Window, name: str, percent: float, event: Update = None,
+                              data: dict[str, Any] = None, chat_id: int = None, message_id: int = None,
+                              interval: float = 0.5) -> Message | None:
         """
         Метод для обновления прогресс бара, не рекомендуется ставить интервал ниже 0.5, исходя из ограничений
         EditMessageText Telegram.
         :param window: параметр State.state или объект Alert | Window
-        :param chat_id: id чата
-        :param message_id: id сообщения
         :param name: название прогресс бара, указано в виджете
         :param percent: новый процент для прогресс бара
-        :param interval: интервал обновления в секундах, если функция будет вызвана раньше она не выполнится
+        :param event: Update бота
         :param data: данные окна
+        :param chat_id: id чата
+        :param message_id: id сообщения
+        :param interval: интервал обновления в секундах, если функция будет вызвана раньше она не выполнится
         :return:
         """
+
+        # Первым в приоритете event объект
+        if event is not None:
+            try:
+                message_id = event.message_id
+                chat_id = event.chat_id
+            except:
+                message_id = event.message.message_id
+                chat_id = event.message.chat.id
+        else:
+            if (message_id is None) or (chat_id is None):
+                raise ValueError("Нужно указать оба параметра: message_id, chat_id")
+
         # Если передан стейт, находим по нему нужное окно
         if not isinstance(window, (Alert, Window)):
             window = await self.__get_window_by_state(state=window)
@@ -228,14 +243,19 @@ class Renderer:
                                                        reply_markup=reply_markup)
         return message
 
-    async def render(self, window: str | Alert | Window, chat_id: int, data: dict[str, Any] = None,
+    async def render(self,
+                     window: str | Alert | Window,
+                     event: Update = None,
+                     chat_id: int = None,
                      message_id: int = None,
+                     data: dict[str, Any] = None,
                      mode: str = RenderMode.ANSWER,
                      parse_mode: str = Default("parse_mode"),
                      file_bytes: dict[str, bytes] = None) -> tuple[Message | None, Window]:
         """
         Основной метод для преобразования окна в сообщение Telegram
         :param window: параметр State.state или объект Alert | Window
+        :param event: Update бота
         :param chat_id: id чата
         :param data: данные для передачи в окно
         :param message_id: id сообщения
@@ -244,9 +264,37 @@ class Renderer:
         :param file_bytes: словарь с байтами файл(а|ов)
         :return:
         """
+
+        # Первым в приоритете event объекта Renderer
+        if (event is None) and (chat_id is None) and (message_id is None):
+            try:
+                message_id = self.event.message_id
+                chat_id = self.event.chat.id
+            except:
+                message_id = self.event.callback_query.message.message_id
+                chat_id = self.event.callback_query.message.chat.id
+
+        # Вторым в приоритете идет event, указанный в renderer
+        elif event is not None:
+            if isinstance(event, Message):
+                message_id = event.message_id
+                chat_id = event.chat.id
+            else:
+                message_id = event.message.message_id
+                chat_id = event.message.chat.id
+
+        # Третьим идут message_id и chat_id
+        else:
+            if (chat_id is None) and (mode == RenderMode.ANSWER):
+                raise ValueError("Для отправки сообщения нужно указать chat_id")
+            elif (chat_id is not None) and (mode == RenderMode.ANSWER):
+                pass
+            elif (chat_id is None) or (message_id is None):
+                raise ValueError("Нужно указать оба параметра: message_id, chat_id")
+
         if message_id is None:
-            assert mode != RenderMode.REPLY, ValueError("message_id is required on REPLY mode")
-            assert mode != RenderMode.DELETE_AND_SEND, ValueError("message_id is required on mode DELETE_AND_SEND")
+            assert mode != RenderMode.REPLY, ValueError("message_id обязателен в REPLY режиме")
+            assert mode != RenderMode.DELETE_AND_SEND, ValueError("message_id обязателен в режиме DELETE_AND_SEND")
 
         if isinstance(window, Alert):
             fsm_data = await self.fsm.get_data()
@@ -280,44 +328,51 @@ class Renderer:
         # Елси не прикреплен, выбираем тип отправки сообщения
         if mode == RenderMode.REPLY:
             message = await self.bot.send_message(chat_id=chat_id, text=text, reply_markup=reply_markup,
-                                                  parse_mode=parse_mode, reply_to_message_id=message_id)
+                                                  parse_mode=parse_mode, reply_to_message_id=message_id,
+                                                  disable_web_page_preview=window.disable_web_page_preview)
 
         elif mode == RenderMode.DELETE_AND_SEND:
             await self.bot.delete_message(chat_id=chat_id, message_id=message_id)
             message = await self.bot.send_message(chat_id=chat_id, text=text, reply_markup=reply_markup,
-                                                  parse_mode=parse_mode)
+                                                  parse_mode=parse_mode,
+                                                  disable_web_page_preview=window.disable_web_page_preview)
 
         elif mode == RenderMode.EDIT:
             message = await self.bot.edit_message_text(chat_id=chat_id, text=text, message_id=message_id,
-                                                       reply_markup=reply_markup, parse_mode=parse_mode)
+                                                       reply_markup=reply_markup, parse_mode=parse_mode,
+                                                       disable_web_page_preview=window.disable_web_page_preview)
 
         # RenderMode.ANSWER в других случаях
         else:
             message = await self.bot.send_message(chat_id=chat_id, text=text, reply_markup=reply_markup,
-                                                  parse_mode=parse_mode)
+                                                  parse_mode=parse_mode,
+                                                  disable_web_page_preview=window.disable_web_page_preview)
 
         return message, window
 
-    async def answer(self, window: str | Alert | Window, chat_id: int, data: dict[str, Any] = None,
-                     parse_mode: ParseMode = Default("parse_mode"),
+    async def answer(self, window: str | Alert | Window, event: Update = None, chat_id: int = None,
+                     data: dict[str, Any] = None, parse_mode: ParseMode = Default("parse_mode"),
                      file_bytes: dict[str, bytes] = None) -> tuple[Message, Window]:
-        return await self.render(window=window, chat_id=chat_id, parse_mode=parse_mode, mode=RenderMode.ANSWER,
+        return await self.render(window=window, event=event, chat_id=chat_id, message_id=None,
+                                 parse_mode=parse_mode, mode=RenderMode.ANSWER,
                                  data=data, file_bytes=file_bytes)
 
-    async def edit(self, window: str | Alert | Window, chat_id: int, message_id: int, data: dict[str, Any] = None,
-                   parse_mode: ParseMode = Default("parse_mode"),
+    async def edit(self, window: str | Alert | Window, event: Update = None, chat_id: int = None,
+                   message_id: int = None, data: dict[str, Any] = None, parse_mode: ParseMode = Default("parse_mode"),
                    file_bytes: dict[str, bytes] = None) -> tuple[Message, Window]:
-        return await self.render(window=window, chat_id=chat_id, message_id=message_id, parse_mode=parse_mode,
-                                 mode=RenderMode.EDIT, data=data, file_bytes=file_bytes)
+        return await self.render(window=window, event=event, chat_id=chat_id, message_id=message_id,
+                                 parse_mode=parse_mode, mode=RenderMode.EDIT, data=data, file_bytes=file_bytes)
 
-    async def delete_and_send(self, window: str | Alert | Window, chat_id: int, message_id: int,
-                              data: dict[str, Any] = None, parse_mode: ParseMode = Default("parse_mode"),
+    async def delete_and_send(self, window: str | Alert | Window, event: Update = None, chat_id: int = None,
+                              message_id: int = None, data: dict[str, Any] = None,
+                              parse_mode: ParseMode = Default("parse_mode"),
                               file_bytes: dict[str, bytes] = None) -> tuple[Message, Window]:
-        return await self.render(window=window, chat_id=chat_id, message_id=message_id, parse_mode=parse_mode,
-                                 mode=RenderMode.DELETE_AND_SEND, data=data, file_bytes=file_bytes)
+        return await self.render(window=window, event=event, chat_id=chat_id, message_id=message_id,
+                                 parse_mode=parse_mode, mode=RenderMode.DELETE_AND_SEND,
+                                 data=data, file_bytes=file_bytes)
 
-    async def reply(self, window: str | Alert | Window, chat_id: int, message_id: int, data: dict[str, Any] = None,
-                    parse_mode: ParseMode = Default("parse_mode"),
+    async def reply(self, window: str | Alert | Window, event: Update = None, chat_id: int = None,
+                    message_id: int = None, data: dict[str, Any] = None, parse_mode: ParseMode = Default("parse_mode"),
                     file_bytes: dict[str, bytes] = None) -> tuple[Message, Window]:
-        return await self.render(window=window, chat_id=chat_id, message_id=message_id, parse_mode=parse_mode,
-                                 mode=RenderMode.REPLY, data=data, file_bytes=file_bytes)
+        return await self.render(window=window, event=event, chat_id=chat_id, message_id=message_id,
+                                 parse_mode=parse_mode, mode=RenderMode.REPLY, data=data, file_bytes=file_bytes)

@@ -101,7 +101,7 @@ async def start(message: Message, renderer: Renderer):
 @dp.message(F.text=="use1")
 async def use1(message: Message, renderer: Renderer):
     # Использование хендлера с Renderer
-    message, window = await renderer.delete_and_send(window=window, chat_id=message.chat_id, message_id=message.message_id)
+    message, window = await renderer.delete_and_send(window=window)
 
 @dp.message(F.text=="use2")
 async def use2(message: Message):
@@ -149,10 +149,7 @@ async def use3(message: Message):
 ```python
 @dp.message(F.text=="/start")
 async def start(message: Message, renderer: Renderer):
-    await renderer.delete_and_send(window=window, 
-                                   chat_id=message.chat_id,
-                                   message_id=message.message_id,
-                                   data={"username": message.from_user.username})
+    await renderer.delete_and_send(window=window, data={"username": message.from_user.username})
 ```
 > [!TIP]
 > Сами поля содержат в себе данные которые вы можете подставить в окно, использовав фигурные скобки в некоторых параметрах виджетов:
@@ -184,10 +181,7 @@ window = Window(
 
 @dp.message(F.text=="/start")
 async def start(message: Message, renderer: Renderer):
-    await renderer.delete_and_send(window=window, 
-                                   chat_id=message.chat_id,
-                                   message_id=message.message_id,
-                                   data={"is_admin": True})
+    await renderer.delete_and_send(window=window, data={"is_admin": True})
 ```
 ## Режимы
 Частенько требовалась кнопка которая бы обновляла и хранила свое активное состояние в разных сообщениях. Режимы позволяют реализовать это, укажите их в configure_renderer
@@ -236,8 +230,7 @@ async def update_mode(message: Message, renderer: Renderer):
     # Обновляем режим
     await renderer.bot_modes.update_mode(mode=mode.name)
     # Обновляем окно
-    await renderer.edit(window=MenuStates.step1, chat_id=pr_message.chat.id,
-                        message_id=pr_message.message_id)
+    await renderer.edit(window=MenuStates.step1)
 ```
 ## Прогресс бар
 Для управления полосой загрузки используйте виджет Progress и функцию update_progress, задайте нужный интервал обновления.
@@ -259,15 +252,11 @@ async def start(message: Message, renderer: Renderer):
     data = {"username": message,from_user.username, "test_pr": 0}
     
     # Сначала будет установлен процент 0
-    pr_message, window = await renderer.answer(
-        window=MenuStates.step1,
-        chat_id=message.chat.id,
-        data=data,
-    )
+    pr_message, window = await renderer.answer(window=MenuStates.step1, data=data)
     
     for i in range(99):
-        await renderer.update_progress(window=MenuStates.step1, chat_id=pr_message.chat.id, interval=0.3,
-                                       message_id=pr_message.message_id, name="test_pr", percent=i, data=data)
+        await renderer.update_progress(window=MenuStates.step1, event=pr_message, interval=0.3,
+                                       name="test_pr", percent=i, data=data)
         await sleep(0.3)
 ```
 ## Динамические наборы
@@ -289,11 +278,7 @@ async def start(message: Message, renderer: Renderer):
             "data": ["d1", "d2", "d3", "d4", "d5"]
         },
     }
-    await renderer.answer(
-        window=MenuStates.step1,
-        chat_id=message.chat.id,
-        data=data,
-    )
+    await renderer.answer(window=MenuStates.step1, data=data)
 
 @dp.callback_query(F.data.startswith("d"))
 async def dpanel_opt(callback: CallbackQuery, renderer: Renderer):
@@ -321,11 +306,7 @@ window = Window(
 @dp.message(F.text=="/start")
 async def start(message: Message, renderer: Renderer):
     async with aiofiles.open(file="audio.mp3", mode="rb") as f:
-        await renderer.answer(
-            window=MenuStates.step1,
-            chat_id=message.chat.id,
-            file_bytes={"bytes_a": await f.read()},
-        )
+        await renderer.answer(window=MenuStates.step1, file_bytes={"bytes_a": await f.read()})
 ```
 Медиа группа имеет специфичную логику работы, так что пока она в разработке, нужно понять как ее правильно добавить в экосистему библиотеки.
 

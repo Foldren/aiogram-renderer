@@ -13,15 +13,16 @@ from .widgets.widget import Widget
 
 
 class ABCWindow(ABC):
-    __slots__ = ('_widgets', '_state')
+    __slots__ = ('_widgets', '_state', 'disable_web_page_preview')
 
-    def __init__(self, *widgets: Widget):
+    def __init__(self, *widgets: Widget, disable_web_page_preview: bool = False):
         """
         Основной класс окна, может быть 2 типов: Alert (не хранит в памяти данные окон) и
         Window (данные хранятся в памяти)
         :param widgets: виджеты
         """
         self._widgets = list(widgets)
+        self.disable_web_page_preview = disable_web_page_preview
 
     async def gen_reply_markup(self, data: dict[str, Any], modes: dict[str, Any], dpanels: dict[str, Any]) -> Any:
         """
@@ -111,18 +112,18 @@ class ABCWindow(ABC):
 
 
 class Window(ABCWindow):
-    __slots__ = ('_state',)
+    __slots__ = ('_state')
 
-    def __init__(self, *widgets: Widget, state: State):
+    def __init__(self, *widgets: Widget, state: State, disable_web_page_preview: bool = False):
         self._state = state
-        super().__init__(*widgets)
+        super().__init__(*widgets, disable_web_page_preview=disable_web_page_preview)
 
 
 class Alert(ABCWindow):
     __slots__ = ()
 
-    def __init__(self, *widgets: Widget):
+    def __init__(self, *widgets: Widget, disable_web_page_preview: bool = False):
         for widget in widgets:
             assert not isinstance(widget, DynamicPanel), ValueError("Alert не поддерживает DynamicPanel (пока)")
             assert not isinstance(widget, Mode), ValueError("Alert не поддерживает Mode (пока)")
-        super().__init__(*widgets)
+        super().__init__(*widgets, disable_web_page_preview=disable_web_page_preview)

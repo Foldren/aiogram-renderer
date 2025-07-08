@@ -240,7 +240,7 @@ class Renderer:
                                                     supports_streaming=True, reply_to_message_id=message_id,
                                                     reply_markup=reply_markup, thumbnail=thumbnail)
             elif isinstance(file, (Audio, AudioBytes, AudioUrl)):
-                message = await self.bot.send_audio(chat_id=chat_id, audio=file_obj, caption=text,
+                message = await self.bot.send_audio(chat_id=chat_id, audio=file_obj, caption=text, thumbnail=thumbnail,
                                                     reply_to_message_id=message_id, reply_markup=reply_markup)
             else:
                 message = await self.bot.send_document(chat_id=chat_id, document=file_obj, caption=text,

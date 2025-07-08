@@ -4,7 +4,8 @@ from aiogram.client.default import Default
 from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, InputMediaPhoto, InputMediaVideo, InputMediaAudio, InputMediaDocument, Update
+from aiogram.types import Message, InputMediaPhoto, InputMediaVideo, InputMediaAudio, InputMediaDocument, Update, \
+    URLInputFile
 
 from aiogram_renderer.window import Window
 from .bot_mode import BotModes
@@ -201,18 +202,20 @@ class Renderer:
         """
         # По умолчанию берем тот текст, что задан в виджетах окна, media_caption будет использоваться для
         # медиа групп
-        file_obj, caption_text = await file.assemble(data=data, file_bytes=file_bytes)
+        file_obj, caption_text, thumbnail_url = await file.assemble(data=data, file_bytes=file_bytes)
         message = None
+        thumbnail = URLInputFile(url=thumbnail_url) if thumbnail_url else None
 
         if mode == RenderMode.EDIT:
             if isinstance(file, (Photo, PhotoBytes)):
                 input_media = InputMediaPhoto(media=file_obj, caption=text)
             elif isinstance(file, (Video, VideoBytes)):
-                input_media = InputMediaVideo(media=file_obj, caption=text, supports_streaming=True)
+                input_media = InputMediaVideo(media=file_obj, caption=text, supports_streaming=True,
+                                              thumbnail=thumbnail)
             elif isinstance(file, (Audio, AudioBytes)):
                 input_media = InputMediaAudio(media=file_obj, caption=text)
             else:
-                input_media = InputMediaDocument(media=file_obj, caption=text)
+                input_media = InputMediaDocument(media=file_obj, caption=text, thumbnail=thumbnail)
             try:
                 message = await self.bot.edit_message_media(chat_id=chat_id, message_id=message_id,
                                                             reply_markup=reply_markup, media=input_media)
@@ -236,14 +239,14 @@ class Renderer:
             elif isinstance(file, (Video, VideoBytes)):
                 message = await self.bot.send_video(chat_id=chat_id, video=file_obj, caption=text,
                                                     supports_streaming=True, reply_to_message_id=message_id,
-                                                    reply_markup=reply_markup)
+                                                    reply_markup=reply_markup, thumbnail=thumbnail)
             elif isinstance(file, (Audio, AudioBytes)):
                 message = await self.bot.send_audio(chat_id=chat_id, audio=file_obj, caption=text,
                                                     reply_to_message_id=message_id, reply_markup=reply_markup)
             else:
                 message = await self.bot.send_document(chat_id=chat_id, document=file_obj, caption=text,
                                                        reply_to_message_id=message_id,
-                                                       reply_markup=reply_markup)
+                                                       reply_markup=reply_markup, thumbnail=thumbnail)
         return message
 
     async def render(self,

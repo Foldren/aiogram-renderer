@@ -9,7 +9,7 @@ class FileUrl(Widget):
 
     # Укажите caption если хотите видеть в MediaGroup под каждым фото описание
     # В случае отправки File отдельно используйте виджеты Text или Multi
-    def __init__(self, url: str, file_name: str, headers: dict[str, Any] = None,
+    def __init__(self, url: str, file_name: str = "", headers: dict[str, Any] = None,
                  thumbnail_url: str = "", media_caption: str | Text | Area = "", show_on: str = None):
         """
         Виджет с файлом
@@ -55,6 +55,9 @@ class FileUrl(Widget):
             if isinstance(caption_text, str) and (caption_text != ""):
                 if '{' + key + '}' in caption_text:
                     caption_text = caption_text.replace('{' + key + '}', str(value))
+
+        if not file_name:
+            file_name = None
 
         return URLInputFile(url=url, filename=file_name, headers=self.headers), caption_text, thumbnail_url
 

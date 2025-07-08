@@ -1,6 +1,6 @@
 [project]
 name = "aiogram-renderer"
-version = "1.3.7"
+version = "1.3.8b1"
 description = "Библиотека UI-виджетов для Telegram-ботов с использованием aiogram3"
 authors = [{ name = "Foldren" }]
 readme = "README.md"

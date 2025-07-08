@@ -56,8 +56,9 @@ class FileBytes(Widget):
 class VideoBytes(FileBytes):
     __slots__ = ()
 
-    def __init__(self, file_name: str, bytes_name: str, media_caption: str | Text = None, show_on: str = None):
-        super().__init__(file_name=file_name, bytes_name=bytes_name,
+    def __init__(self, file_name: str, bytes_name: str, thumbnail_url: str = "", media_caption: str | Text = None,
+                 show_on: str = None):
+        super().__init__(file_name=file_name, bytes_name=bytes_name, thumbnail_url=thumbnail_url,
                          media_caption=media_caption, show_on=show_on)
 
 
@@ -72,6 +73,7 @@ class PhotoBytes(FileBytes):
 class AudioBytes(FileBytes):
     __slots__ = ()
 
-    def __init__(self, file_name: str, bytes_name: str, media_caption: str | Text = None, show_on: str = None):
-        super().__init__(file_name=file_name, bytes_name=bytes_name,
+    def __init__(self, file_name: str, bytes_name: str, thumbnail_url: str = "", media_caption: str | Text = None,
+                 show_on: str = None):
+        super().__init__(file_name=file_name, bytes_name=bytes_name, thumbnail_url=thumbnail_url,
                          media_caption=media_caption, show_on=show_on)

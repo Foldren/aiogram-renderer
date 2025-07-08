@@ -76,5 +76,7 @@ class Photo(File):
 class Audio(File):
     __slots__ = ()
 
-    def __init__(self, file_name: str, path: str, media_caption: str | Text = None, show_on: str = None):
-        super().__init__(file_name=file_name, path=path, media_caption=media_caption, show_on=show_on)
+    def __init__(self, file_name: str, path: str, thumbnail_url: str = "", media_caption: str | Text = None,
+                 show_on: str = None):
+        super().__init__(file_name=file_name, path=path, media_caption=media_caption, thumbnail_url=thumbnail_url,
+                         show_on=show_on)

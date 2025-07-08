@@ -4,6 +4,7 @@ from typing import Any
 from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardMarkup
 from .widgets.inline.button import Button, Mode
 from .widgets.inline.panel import Panel, DynamicPanel
+from .widgets.media.url import FileUrl
 from .widgets.reply.button import ReplyButton
 from .widgets.reply.panel import ReplyPanel
 from .widgets.media.bytes import FileBytes
@@ -100,7 +101,7 @@ class ABCWindow(ABC):
         :return:
         """
         for widget in self._widgets:
-            if isinstance(widget, (File, FileBytes)):
+            if isinstance(widget, (File, FileBytes, FileUrl)):
                 return widget
         return None
 

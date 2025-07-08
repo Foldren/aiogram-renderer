@@ -66,7 +66,7 @@ class VideoUrl(FileUrl):
     __slots__ = ()
 
     def __init__(self, url: str, file_name: str = "", headers: dict[str, Any] = None,
-                 media_caption: str | Text | Area = "", thumbnail_url: str = "", show_on: str = None):
+                 thumbnail_url: str = "", media_caption: str | Text | Area = "", show_on: str = None):
         super().__init__(file_name=file_name, url=url, headers=headers, thumbnail_url=thumbnail_url,
                          media_caption=media_caption, show_on=show_on)
 
@@ -82,6 +82,7 @@ class PhotoUrl(FileUrl):
 class AudioUrl(FileUrl):
     __slots__ = ()
 
-    def __init__(self, url: str, file_name: str = "", headers: dict[str, Any] = None,
+    def __init__(self, url: str, file_name: str = "", headers: dict[str, Any] = None, thumbnail_url: str = "",
                  media_caption: str | Text | Area = "", show_on: str = None):
-        super().__init__(file_name=file_name, url=url, headers=headers, media_caption=media_caption, show_on=show_on)
+        super().__init__(file_name=file_name, url=url, headers=headers, media_caption=media_caption,
+                         thumbnail_url=thumbnail_url, show_on=show_on)

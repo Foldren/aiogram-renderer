@@ -2,7 +2,7 @@ from aiogram import Dispatcher
 from .handlers.reply_router import router as reply_handlers
 from .handlers.inline_router import router as inline_handlers
 from .bot_mode import BotMode
-from .middlewares import RendererMiddleware
+from aiogram_renderer.components.middlewares import RendererMiddleware
 from .window import Window
 
 

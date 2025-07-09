@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any, Coroutine
+from typing import Any
 from aiogram.client.default import Default
 from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InputMediaPhoto, InputMediaVideo, InputMediaAudio, InputMediaDocument, Update, \
     URLInputFile
 from .bot_mode import BotModes
-from .enums import RenderMode
+from aiogram_renderer.components.enums import RenderMode
 from .widgets.inline.panel import DynamicPanel
 from .widgets.media.bytes import FileBytes, AudioBytes, VideoBytes, PhotoBytes
 from .widgets.media.path import File, Audio, Video, Photo
@@ -201,9 +201,8 @@ class Renderer:
         """
         # По умолчанию берем тот текст, что задан в виджетах окна, media_caption будет использоваться для
         # медиа групп
-        file_obj, caption_text, thumbnail_url = await file.assemble(data=data, file_bytes=file_bytes)
+        file_obj, caption_text, thumbnail = await file.assemble(data=data, file_bytes=file_bytes)
         message = None
-        thumbnail = URLInputFile(url=thumbnail_url) if thumbnail_url else None
 
         if mode == RenderMode.EDIT:
             if isinstance(file, (Photo, PhotoBytes, PhotoUrl)):

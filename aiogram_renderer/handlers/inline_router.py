@@ -1,7 +1,7 @@
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
-from aiogram_renderer.filters import IsModeWithNotCustomHandler
+from aiogram_renderer.components.filters import IsModeWithNotCustomHandler
 from aiogram_renderer.renderer import Renderer
 
 router = Router()

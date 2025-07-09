@@ -1,6 +1,6 @@
 from aiogram.filters import BaseFilter
 from aiogram.types import Message, CallbackQuery
-from .renderer import Renderer
+from aiogram_renderer.renderer import Renderer
 
 
 class IsModeWithNotCustomHandler(BaseFilter):

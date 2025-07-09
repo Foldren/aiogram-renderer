@@ -1,6 +1,6 @@
 from aiogram import Router
 from aiogram.types import Message
-from aiogram_renderer.filters import IsModeWithNotCustomHandler
+from aiogram_renderer.components.filters import IsModeWithNotCustomHandler
 from aiogram_renderer.renderer import Renderer
 
 router = Router()

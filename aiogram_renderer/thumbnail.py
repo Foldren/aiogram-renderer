@@ -73,4 +73,4 @@ class ThumbnailBytes(Thumbnail):
             if '{' + key + '}' in file_name:
                 file_name = file_name.replace('{' + key + '}', str(value))
 
-        return BufferedInputFile(file=kwargs["file_bytes"][self.bytes_name], filename=file_name)
+        return BufferedInputFile(file=kwargs["kwargs"]["file_bytes"][self.bytes_name], filename=file_name)

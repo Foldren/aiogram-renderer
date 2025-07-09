@@ -26,7 +26,7 @@ class FileBytes(Widget):
         self.thumbnail = thumbnail
         self.media_caption = media_caption
 
-    async def assemble(self, data: dict[str, Any], **kwargs) -> tuple[BufferedInputFile | None, str, Any]:
+    async def assemble(self, data: dict[str, Any], **kwargs) -> tuple[Any, Any, Any]:
         if not (await self.is_show_on(data)):
             return None, "", None
 

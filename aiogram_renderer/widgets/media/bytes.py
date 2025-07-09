@@ -1,6 +1,6 @@
 from typing import Any
 from aiogram.types import BufferedInputFile
-from aiogram_renderer.components.thumbnail import Thumbnail
+from aiogram_renderer.thumbnail import Thumbnail
 from aiogram_renderer.widgets.text import Text, Area
 from aiogram_renderer.widgets.widget import Widget
 
@@ -48,7 +48,7 @@ class FileBytes(Widget):
                     caption_text = caption_text.replace('{' + key + '}', str(value))
 
         if self.thumbnail is not None:
-            thumbnail_obj = await self.thumbnail.assemble(data=data)
+            thumbnail_obj = await self.thumbnail.assemble(data=data, kwargs=kwargs)
         else:
             thumbnail_obj = None
 

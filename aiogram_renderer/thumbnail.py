@@ -11,7 +11,7 @@ class Thumbnail(ABC):
         pass
 
 
-class ThumbnailPath:
+class ThumbnailPath(Thumbnail):
     __slots__ = ("file_name", "path")
 
     def __init__(self, file_name: str, path: str):
@@ -34,7 +34,7 @@ class ThumbnailPath:
         return FSInputFile(path=path, filename=file_name)
 
 
-class ThumbnailUrl:
+class ThumbnailUrl(Thumbnail):
     __slots__ = ("file_name", "url")
 
     def __init__(self, file_name: str, url: str):
@@ -57,7 +57,7 @@ class ThumbnailUrl:
         return URLInputFile(url=url, filename=file_name)
 
 
-class ThumbnailBytes:
+class ThumbnailBytes(Thumbnail):
     __slots__ = ("file_name", "bytes_name")
 
     def __init__(self, file_name: str, bytes_name: str):

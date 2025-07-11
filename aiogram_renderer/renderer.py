@@ -131,7 +131,7 @@ class Renderer:
 
     async def update_progress(self, window: str | Alert | Window, name: str, percent: float, event: Update = None,
                               data: dict[str, Any] = None, chat_id: int = None, message_id: int = None,
-                              interval: float = 0.5) -> Message | None:
+                              interval: float = 0.5) -> Message | None | TelegramBadRequest:
         """
         Метод для обновления прогресс бара, не рекомендуется ставить интервал ниже 0.5, исходя из ограничений
         EditMessageText Telegram.
@@ -181,9 +181,10 @@ class Renderer:
         new_text = await window.gen_text(data=data)
 
         try:
-            return await self.bot.edit_message_text(chat_id=chat_id, message_id=message_id, text=new_text)
-        except TelegramBadRequest:
-            return None
+            return await self.bot.edit_message_text(chat_id=chat_id, message_id=message_id, text=new_text,
+                                                    reply_markup=keyboard)
+        except TelegramBadRequest as err:
+            return err
 
     async def __render_media(self, file: File | FileBytes, data: dict[str, Any], text: str,
                              chat_id: int, message_id: int = None, mode: str = RenderMode.ANSWER,

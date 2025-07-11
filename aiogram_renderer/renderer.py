@@ -178,7 +178,7 @@ class Renderer:
         data[name] = percent
 
         # Пересобираем текст сообщения с обновленным прогресс баром
-        new_text = await window.gen_text(data=data)
+        file, new_text, keyboard = await window.assemble(data=data, modes={}, dpanels={})
 
         try:
             return await self.bot.edit_message_text(chat_id=chat_id, message_id=message_id, text=new_text,

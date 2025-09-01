@@ -368,6 +368,17 @@ class Renderer:
         return await self.render(window=window, event=event, chat_id=chat_id, message_id=message_id,
                                  parse_mode=parse_mode, mode=RenderMode.EDIT, data=data, file_bytes=file_bytes)
 
+    async def edit_or_answer(self, window: str | Alert | Window, event: Update = None, chat_id: int = None,
+                             message_id: int = None, data: dict[str, Any] = None,
+                             parse_mode: ParseMode = Default("parse_mode"),
+                             file_bytes: dict[str, bytes] = None) -> tuple[Message, Window]:
+        try:
+            return await self.render(window=window, event=event, chat_id=chat_id, message_id=message_id,
+                                     parse_mode=parse_mode, mode=RenderMode.EDIT, data=data, file_bytes=file_bytes)
+        except TelegramBadRequest:
+            return await self.render(window=window, event=event, chat_id=chat_id, message_id=message_id,
+                                     parse_mode=parse_mode, mode=RenderMode.ANSWER, data=data, file_bytes=file_bytes)
+
     async def delete_and_send(self, window: str | Alert | Window, event: Update = None, chat_id: int = None,
                               message_id: int = None, data: dict[str, Any] = None,
                               parse_mode: ParseMode = Default("parse_mode"),

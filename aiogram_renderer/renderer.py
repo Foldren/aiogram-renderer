@@ -337,7 +337,10 @@ class Renderer:
                                                   disable_web_page_preview=window.disable_web_page_preview)
 
         elif mode == RenderMode.DELETE_AND_SEND:
-            await self.bot.delete_message(chat_id=chat_id, message_id=message_id)
+            try:
+                await self.bot.delete_message(chat_id=chat_id, message_id=message_id)
+            except TelegramBadRequest:
+                pass
             message = await self.bot.send_message(chat_id=chat_id, text=text, reply_markup=reply_markup,
                                                   parse_mode=parse_mode,
                                                   disable_web_page_preview=window.disable_web_page_preview)

@@ -184,7 +184,7 @@ class Renderer:
             return await self.bot.edit_message_text(chat_id=chat_id, message_id=message_id, text=new_text,
                                                     reply_markup=keyboard)
         except TelegramBadRequest as e:
-            if "message not found" in str(e):
+            if "message to edit not found" in str(e):
                 return await self.bot.send_message(chat_id=chat_id, text=new_text, reply_markup=keyboard)
             else:
                 return e

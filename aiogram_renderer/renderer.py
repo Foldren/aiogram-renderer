@@ -208,7 +208,7 @@ class Renderer:
         file_obj, caption_text, thumbnail = await file.assemble(data=data, file_bytes=file_bytes)
         message = None
 
-        if mode == RenderMode.EDIT:
+        if mode == RenderMode.EDIT or mode == RenderMode.EDIT_OR_ANSWER:
             if isinstance(file, (Photo, PhotoBytes, PhotoUrl)):
                 input_media = InputMediaPhoto(media=file_obj, caption=text)
             elif isinstance(file, (Video, VideoBytes, VideoUrl)):
@@ -221,34 +221,37 @@ class Renderer:
             try:
                 message = await self.bot.edit_message_media(chat_id=chat_id, message_id=message_id,
                                                             reply_markup=reply_markup, media=input_media)
+                return message
+
             # Если нет медиафайла пропускаем ошибку
             except Exception:
-                pass
+                if mode == RenderMode.EDIT:
+                    return message
 
+        # Если режим DELETE_AND_SEND - удаляем сообщение
+        if mode == RenderMode.DELETE_AND_SEND:
+            await self.bot.delete_message(chat_id=chat_id, message_id=message_id)
+
+        # Если режим не REPLY - удаляем id REPLY сообщения
+        if mode != RenderMode.REPLY:
+            message_id = None
+
+        # В режимах ANSWER, REPLY, EDIT_OR_ANSWER - отправляем сообщение с media
+        if isinstance(file, (Photo, PhotoBytes, PhotoUrl)):
+            message = await self.bot.send_photo(chat_id=chat_id, photo=file_obj, caption=text,
+                                                reply_to_message_id=message_id, reply_markup=reply_markup)
+        elif isinstance(file, (Video, VideoBytes, VideoUrl)):
+            message = await self.bot.send_video(chat_id=chat_id, video=file_obj, caption=text,
+                                                supports_streaming=True, reply_to_message_id=message_id,
+                                                reply_markup=reply_markup, thumbnail=thumbnail)
+        elif isinstance(file, (Audio, AudioBytes, AudioUrl)):
+            message = await self.bot.send_audio(chat_id=chat_id, audio=file_obj, caption=text, thumbnail=thumbnail,
+                                                reply_to_message_id=message_id, reply_markup=reply_markup)
         else:
-            # Если режим DELETE_AND_SEND - удаляем сообщение
-            if mode == RenderMode.DELETE_AND_SEND:
-                await self.bot.delete_message(chat_id=chat_id, message_id=message_id)
+            message = await self.bot.send_document(chat_id=chat_id, document=file_obj, caption=text,
+                                                   reply_to_message_id=message_id,
+                                                   reply_markup=reply_markup, thumbnail=thumbnail)
 
-            # Если режим не REPLY - удаляем id REPLY сообщения
-            if mode != RenderMode.REPLY:
-                message_id = None
-
-            # В режимах ANSWER, REPLY - отправляем сообщение с media
-            if isinstance(file, (Photo, PhotoBytes, PhotoUrl)):
-                message = await self.bot.send_photo(chat_id=chat_id, photo=file_obj, caption=text,
-                                                    reply_to_message_id=message_id, reply_markup=reply_markup)
-            elif isinstance(file, (Video, VideoBytes, VideoUrl)):
-                message = await self.bot.send_video(chat_id=chat_id, video=file_obj, caption=text,
-                                                    supports_streaming=True, reply_to_message_id=message_id,
-                                                    reply_markup=reply_markup, thumbnail=thumbnail)
-            elif isinstance(file, (Audio, AudioBytes, AudioUrl)):
-                message = await self.bot.send_audio(chat_id=chat_id, audio=file_obj, caption=text, thumbnail=thumbnail,
-                                                    reply_to_message_id=message_id, reply_markup=reply_markup)
-            else:
-                message = await self.bot.send_document(chat_id=chat_id, document=file_obj, caption=text,
-                                                       reply_to_message_id=message_id,
-                                                       reply_markup=reply_markup, thumbnail=thumbnail)
         return message
 
     async def render(self,
@@ -353,6 +356,16 @@ class Renderer:
                                                        reply_markup=reply_markup, parse_mode=parse_mode,
                                                        disable_web_page_preview=window.disable_web_page_preview)
 
+        elif mode == RenderMode.EDIT_OR_ANSWER:
+            try:
+                message = await self.bot.edit_message_text(chat_id=chat_id, text=text, message_id=message_id,
+                                                           reply_markup=reply_markup, parse_mode=parse_mode,
+                                                           disable_web_page_preview=window.disable_web_page_preview)
+            except:
+                message = await self.bot.send_message(chat_id=chat_id, text=text, reply_markup=reply_markup,
+                                                      parse_mode=parse_mode,
+                                                      disable_web_page_preview=window.disable_web_page_preview)
+
         # RenderMode.ANSWER в других случаях
         else:
             message = await self.bot.send_message(chat_id=chat_id, text=text, reply_markup=reply_markup,
@@ -378,12 +391,8 @@ class Renderer:
                              message_id: int = None, data: dict[str, Any] = None,
                              parse_mode: ParseMode = Default("parse_mode"),
                              file_bytes: dict[str, bytes] = None) -> tuple[Message, Window]:
-        try:
-            return await self.render(window=window, event=event, chat_id=chat_id, message_id=message_id,
-                                     parse_mode=parse_mode, mode=RenderMode.EDIT, data=data, file_bytes=file_bytes)
-        except TelegramBadRequest:
-            return await self.render(window=window, event=event, chat_id=chat_id, message_id=message_id,
-                                     parse_mode=parse_mode, mode=RenderMode.ANSWER, data=data, file_bytes=file_bytes)
+        return await self.render(window=window, event=event, chat_id=chat_id, message_id=message_id,
+                                 parse_mode=parse_mode, mode=RenderMode.EDIT_OR_ANSWER, data=data, file_bytes=file_bytes)
 
     async def delete_and_send(self, window: str | Alert | Window, event: Update = None, chat_id: int = None,
                               message_id: int = None, data: dict[str, Any] = None,

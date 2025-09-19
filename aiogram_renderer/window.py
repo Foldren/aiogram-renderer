@@ -4,6 +4,7 @@ from typing import Any
 from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardMarkup
 from .widgets.inline.button import Button, Mode
 from .widgets.inline.panel import Panel, DynamicPanel
+from .widgets.media.file_id import FileID
 from .widgets.media.url import FileUrl
 from .widgets.reply.button import ReplyButton
 from .widgets.reply.panel import ReplyPanel
@@ -95,20 +96,22 @@ class ABCWindow(ABC):
                 text += await widget.assemble(data=data)
         return text
 
-    async def get_media(self) -> File | FileBytes | None:
+    async def get_media(self, data: dict[str, Any]) -> File | FileBytes | None:
         """
         Метод для получения файлового объекта
         :return:
         """
         for widget in self._widgets:
-            if isinstance(widget, (File, FileBytes, FileUrl)):
-                return widget
+            if isinstance(widget, (File, FileBytes, FileUrl, FileID)):
+                is_visible = await widget.is_show_on(data=data)
+                if is_visible:
+                    return widget
         return None
 
     async def assemble(self, data: dict[str, Any], modes: dict[str, Any], dpanels: dict[str, Any]) -> tuple:
         reply_markup = await self.gen_reply_markup(data=data, modes=modes, dpanels=dpanels)
         text = await self.gen_text(data=data)
-        file = await self.get_media()
+        file = await self.get_media(data=data)
         return file, text, reply_markup
 
 

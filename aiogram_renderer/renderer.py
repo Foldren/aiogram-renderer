@@ -4,14 +4,14 @@ from aiogram.client.default import Default
 from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, InputMediaPhoto, InputMediaVideo, InputMediaAudio, InputMediaDocument, Update, \
-    URLInputFile
+from aiogram.types import Message, InputMediaPhoto, InputMediaVideo, InputMediaAudio, InputMediaDocument, Update
 from .bot_mode import BotModes
 from aiogram_renderer.components.enums import RenderMode
 from .widgets.inline.panel import DynamicPanel
 from .widgets.media.bytes import FileBytes, AudioBytes, VideoBytes, PhotoBytes
+from .widgets.media.file_id import FileID, PhotoID, VideoID, AudioID
 from .widgets.media.path import File, Audio, Video, Photo
-from .widgets.media.url import AudioUrl, PhotoUrl, VideoUrl
+from .widgets.media.url import AudioUrl, PhotoUrl, VideoUrl, FileUrl
 from .window import Window, Alert
 
 
@@ -189,7 +189,7 @@ class Renderer:
             else:
                 return e
 
-    async def __render_media(self, file: File | FileBytes, data: dict[str, Any], text: str,
+    async def __render_media(self, file: File | FileBytes | FileUrl | FileID, data: dict[str, Any], text: str,
                              chat_id: int, message_id: int = None, mode: str = RenderMode.ANSWER,
                              reply_markup: Any = None, file_bytes: dict[str, bytes] = None) -> Message | None:
         """
@@ -209,12 +209,12 @@ class Renderer:
         message = None
 
         if mode == RenderMode.EDIT or mode == RenderMode.EDIT_OR_ANSWER:
-            if isinstance(file, (Photo, PhotoBytes, PhotoUrl)):
+            if isinstance(file, (Photo, PhotoBytes, PhotoUrl, PhotoID)):
                 input_media = InputMediaPhoto(media=file_obj, caption=text)
-            elif isinstance(file, (Video, VideoBytes, VideoUrl)):
+            elif isinstance(file, (Video, VideoBytes, VideoUrl, VideoID)):
                 input_media = InputMediaVideo(media=file_obj, caption=text, supports_streaming=True,
                                               thumbnail=thumbnail)
-            elif isinstance(file, (Audio, AudioBytes, AudioUrl)):
+            elif isinstance(file, (Audio, AudioBytes, AudioUrl, AudioID)):
                 input_media = InputMediaAudio(media=file_obj, caption=text)
             else:
                 input_media = InputMediaDocument(media=file_obj, caption=text, thumbnail=thumbnail)
@@ -237,14 +237,14 @@ class Renderer:
             message_id = None
 
         # В режимах ANSWER, REPLY, EDIT_OR_ANSWER - отправляем сообщение с media
-        if isinstance(file, (Photo, PhotoBytes, PhotoUrl)):
+        if isinstance(file, (Photo, PhotoBytes, PhotoUrl, PhotoID)):
             message = await self.bot.send_photo(chat_id=chat_id, photo=file_obj, caption=text,
                                                 reply_to_message_id=message_id, reply_markup=reply_markup)
-        elif isinstance(file, (Video, VideoBytes, VideoUrl)):
+        elif isinstance(file, (Video, VideoBytes, VideoUrl, VideoID)):
             message = await self.bot.send_video(chat_id=chat_id, video=file_obj, caption=text,
                                                 supports_streaming=True, reply_to_message_id=message_id,
                                                 reply_markup=reply_markup, thumbnail=thumbnail)
-        elif isinstance(file, (Audio, AudioBytes, AudioUrl)):
+        elif isinstance(file, (Audio, AudioBytes, AudioUrl, AudioID)):
             message = await self.bot.send_audio(chat_id=chat_id, audio=file_obj, caption=text, thumbnail=thumbnail,
                                                 reply_to_message_id=message_id, reply_markup=reply_markup)
         else:

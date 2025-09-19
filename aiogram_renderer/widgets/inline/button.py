@@ -95,3 +95,25 @@ class Url(Button):
                 url = url.replace("{" + key + "}", str(value))
 
         return InlineKeyboardButton(text=text, url=url, callback_data=btn_data)
+
+
+class Radio(Button):
+    __slots__ = ("group_name", "active_str",)
+
+    def __init__(self, text: str, group_name: str, active_str: str = "🔘", show_on: str = None):
+        self.group_name = group_name
+        self.active_str = active_str
+        super().__init__(text=text, data=f"__radio__:{group_name}:{text}", show_on=show_on)
+
+    async def assemble(self, data: dict[str, Any], **kwargs) -> Any:
+        if not (await self.is_show_on(data)):
+            return None
+
+        assert not (self.group_name in data), ValueError("Нужно задать параметр data[group_name] и указать в нем "
+                                                         "активное значение")
+        if data[self.group_name] != self.text:
+            text = self.text
+        else:
+            text = self.active_str + " " + self.text
+
+        return InlineKeyboardButton(text=text, callback_data=self.data)

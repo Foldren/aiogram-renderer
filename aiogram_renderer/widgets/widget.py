@@ -20,4 +20,6 @@ class Widget(ABC):
                     return False
                 elif (self.show_on[0] == "!") and (data[clear_show_on]):
                     return False
+            else:
+                return False
         return True

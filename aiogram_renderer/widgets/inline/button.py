@@ -110,8 +110,8 @@ class Radio(Button):
         if not (await self.is_show_on(data)):
             return None
 
-        assert not (self.group_name in data), ValueError("Нужно задать параметр data[group_name] и указать в нем "
-                                                         "активное значение")
+        assert self.group_name in data, ValueError("Нужно задать параметр data[group_name] и указать в нем "
+                                                   "активное значение")
         if data[self.group_name] != self.text:
             text = self.text
         else:

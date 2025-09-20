@@ -14,7 +14,7 @@ router.callback_query.filter(F.message.chat.type == "private")
 
 @router.message(F.text.in_({"/start", "/restart"}))
 async def start(message: Message, renderer: Renderer):
-    data = {"1": "Radio1"}
+    data = {"test_radio": "Radio1"}
     await renderer.answer(window=MenuStates.main1, event=message, data=data)
 
 

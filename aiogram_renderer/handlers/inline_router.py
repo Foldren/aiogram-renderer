@@ -55,6 +55,11 @@ async def press_radio_btn(callback: CallbackQuery, state: FSMContext, renderer: 
     fsm_data = await state.get_data()
     w_state = await state.get_state()
 
+    # Проверяем не равно ли значение уже текущему, если да отвечаем, выходим
+    if fsm_data["__windows__"][w_state][group_name] == btn_text:
+        await callback.answer()
+        return
+
     # Устанавливаем новую активную страницу в группе
     fsm_data["__windows__"][w_state][group_name] = btn_text
     await state.set_data(fsm_data)

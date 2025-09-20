@@ -129,6 +129,34 @@ class Renderer:
         fsm_data["__dpanels__"][name]["page"] = page
         await self.fsm.set_data(fsm_data)
 
+    async def get_window_data(self, window: str | Window) -> dict[str, Any]:
+        """
+        Метод для получения данных окна из FSM
+        :param window: параметр State.state или объект Alert | Window
+        """
+        # Проверяем есть ли стейт в заданных окнах
+        if isinstance(window, str):
+            window = await self.__get_window_by_state(window)
+
+        # Форматируем имя параметра окна
+        fsm_data = await self.fsm.get_data()
+        w_param_name = window._state.state.replace(".", ":")
+        return fsm_data["__windows__"][w_param_name]
+
+    async def set_window_data(self, window: str | Window, data: dict[str, Any]) -> None:
+        """
+        Метод для перезаписи данных окна из FSM
+        :param window: параметр State.state или объект Alert | Window
+        :param data: новые данные окна
+        """
+        # Проверяем есть ли стейт в заданных окнах
+        if isinstance(window, str):
+            window = await self.__get_window_by_state(window)
+
+        # Форматируем имя параметра окна
+        w_param_name = window._state.state.replace(".", ":")
+        await self.fsm.update_data({"__windows__": {w_param_name: data}})
+
     async def update_progress(self, window: str | Alert | Window, name: str, percent: float, event: Update = None,
                               data: dict[str, Any] = None, chat_id: int = None, message_id: int = None,
                               interval: float = 0.5) -> Message | None | TelegramBadRequest:

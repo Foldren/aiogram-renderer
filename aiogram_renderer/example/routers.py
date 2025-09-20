@@ -1,7 +1,7 @@
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
-from aiogram_renderer.example.windows import alert_mode
+from aiogram.types import Message, CallbackQuery
+from aiogram_renderer.example.windows import alert_mode, main_window
 from aiogram_renderer.components.filters import IsMode
 from aiogram_renderer.renderer import Renderer
 from states import MenuStates
@@ -15,8 +15,27 @@ router.callback_query.filter(F.message.chat.type == "private")
 @router.message(F.text.in_({"/start", "/restart"}))
 async def start(message: Message, renderer: Renderer):
     data = {"test_radio": "Radio1"}
-    await renderer.answer(window=MenuStates.main1, event=message, data=data)
+    await renderer.answer(window=main_window, event=message, data=data)
 
+
+@router.callback_query(F.data.startswith("__radio__"))
+async def press_radio_btn(callback: CallbackQuery, state: FSMContext, renderer: Renderer):
+    print(1)
+    # group_name = callback.data.split(":")[1]
+    # btn_text = callback.data.split(":")[2]
+    # has_custom_handler = int(callback.data.split(":")[3])
+    #
+    # if has_custom_handler:
+    #     return
+    #
+    # fsm_data = await state.get_data()
+    # w_state = await state.get_state()
+    #
+    # # Устанавливаем новую активную страницу в группе
+    # fsm_data["__windows__"][w_state][group_name] = btn_text
+    # await state.set_data(fsm_data)
+    #
+    # await renderer.edit(window=w_state, event=callback)
 
     # data = {"username": f" {message.from_user.username}" if message.from_user else "",
     #         "test_show_on": False,

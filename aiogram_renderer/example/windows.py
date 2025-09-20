@@ -7,9 +7,9 @@ from aiogram_renderer.window import Window, Alert
 
 main_window = Window(
     Text("👋 Привет<b>{username}</b>, я тест", end_count=2),
-    Radio(text="Radio1", group_name="test_radio"),
-    Radio(text="Radio2", group_name="test_radio"),
-    Radio(text="Radio3", group_name="test_radio"),
+    Radio(text="Radio1", group_name="test_radio", has_custom_handler=True),
+    Radio(text="Radio2", group_name="test_radio", has_custom_handler=True),
+    Radio(text="Radio3", group_name="test_radio", has_custom_handler=True),
     state=MenuStates.main1,
 )
 

@@ -52,3 +52,14 @@ class IsMode(BaseFilter):
                 raise ValueError("Такого режима нет")
 
         return False
+
+
+class IsRadio(BaseFilter):
+    def __init__(self, group_name: str, value: str):
+        self.group_name = group_name
+        self.value = value
+
+    async def __call__(self, event: CallbackQuery, renderer: Renderer) -> bool:
+        if event.data.startswith(f"__radio__:{self.group_name}:{self.value}"):
+            return True
+        return False

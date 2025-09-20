@@ -99,12 +99,13 @@ class Url(Button):
 
 
 class Radio(Button):
-    __slots__ = ("group_name", "active_str",)
+    __slots__ = ("group_name", "active_str", "has_custom_handler")
 
-    def __init__(self, text: str, group_name: str, active_str: str = "🔘", show_on: str = None):
+    def __init__(self, text: str, group_name: str, active_str: str = "🔘", has_custom_handler: bool = False,
+                 show_on: str = None):
         self.group_name = group_name
         self.active_str = active_str
-        super().__init__(text=text, data=f"__radio__:{group_name}:{text}", show_on=show_on)
+        super().__init__(text=text, data=f"__radio__:{group_name}:{text}:{int(has_custom_handler)}", show_on=show_on)
 
     async def assemble(self, data: dict[str, Any], **kwargs) -> Any:
         if not (await self.is_show_on(data)):

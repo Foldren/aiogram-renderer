@@ -47,10 +47,11 @@ async def switch_dynamic_panel_page(callback: CallbackQuery, state: FSMContext, 
     await renderer.edit(window=w_state, event=callback)
 
 
-@router.callback_query(F.data.startswith("__radio__"))
+@router.callback_query(F.data.endswith("0"), F.data.startswith("__radio__"))
 async def press_radio_btn(callback: CallbackQuery, state: FSMContext, renderer: Renderer):
     group_name = callback.data.split(":")[1]
     btn_text = callback.data.split(":")[2]
+
     fsm_data = await state.get_data()
     w_state = await state.get_state()
 

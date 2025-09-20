@@ -1,6 +1,7 @@
 from typing import Any
 from aiogram.fsm.state import State
 from aiogram.types import InlineKeyboardButton
+from aiogram_renderer.components.enums import RenderMode
 from aiogram_renderer.widgets.widget import Widget
 
 
@@ -63,10 +64,10 @@ class Disable(Button):
 
 
 class ComeTo(Button):
-    __slots__ = ()
+    __slots__ = ("mode",)
 
-    def __init__(self, text: str, state: State, show_on: str = None):
-        super().__init__(text=text, data=f"__cometo__:{state.state}", show_on=show_on)
+    def __init__(self, text: str, state: State, mode: RenderMode = RenderMode.EDIT, show_on: str = None):
+        super().__init__(text=text, data=f"__cometo__:{state.state}:{mode.value}", show_on=show_on)
 
 
 class Url(Button):

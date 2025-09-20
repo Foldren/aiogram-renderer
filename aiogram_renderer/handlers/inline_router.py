@@ -14,7 +14,8 @@ RESERVED_CONTAIN_CALLBACKS = ("__mode__", "__dpanel__", "__cometo__")
 @router.callback_query(F.data.startswith("__cometo__"))
 async def come_to_window(callback: CallbackQuery, renderer: Renderer):
     open_state = callback.data.split(":")[1] + ":" + callback.data.split(":")[2]
-    await renderer.edit(window=open_state, event=callback)
+    mode = callback.data.split(":")[3]
+    await renderer.render(window=open_state, mode=mode, event=callback)
 
 
 @router.callback_query(F.data == "__disable__")

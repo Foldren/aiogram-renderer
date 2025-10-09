@@ -8,7 +8,7 @@ class Panel(Widget):
     __slots__ = ("buttons", "width", "height", "hide_control_buttons", "lift_control_buttons", "name")
 
     def __init__(self, *buttons: Button, width: int = 1, height: int = 1, name: str = "",
-                 hide_control_buttons: bool = False, lift_control_buttons: bool = False, show_on: str = None):
+                 hide_control_buttons: bool = True, lift_control_buttons: bool = False, show_on: str = None):
         # Минимальная ширина 1
         assert width >= 1, ValueError("Ширина группы должна быть не меньше 1")
         # Минимальная высота 1

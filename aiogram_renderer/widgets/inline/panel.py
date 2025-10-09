@@ -20,9 +20,9 @@ class Panel(Widget):
         # Максимальная высота inlineKeyboard 100 (ограничение Telegram)
         assert len(buttons) / width <= 100, ValueError("У Telegram ограничение на высоту InlineKeyboard - 100 кнопок")
         self.buttons = list(buttons)
+        self.name = name
         self.width = width
         self.height = height
-        self.name = name
         self.hide_control_buttons = hide_control_buttons
         self.lift_control_buttons = lift_control_buttons
         super().__init__(show_on=show_on)
@@ -32,7 +32,7 @@ class Panel(Widget):
             return [[]]
 
         n_page_buttons = self.width * self.height
-        page = 1 if data.get(self.name, None) is None else data[self.name]
+        page = max(1 if data.get(self.name, None) is None else data[self.name], 1)
         start_index = (page * n_page_buttons) - n_page_buttons
         start_index = start_index + 1 if page > 1 else start_index
 
@@ -61,7 +61,7 @@ class Panel(Widget):
                 col += 1
                 count_buttons += 1
 
-        last_page = len(self.buttons) // n_page_buttons
+        last_page = count_buttons // n_page_buttons + 1
 
         # Формируем кнопки управления
         if (len(self.buttons) > (self.width * self.height)) and (not self.hide_control_buttons) and self.name:

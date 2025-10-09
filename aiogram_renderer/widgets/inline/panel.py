@@ -29,22 +29,26 @@ class Panel(Widget):
         if not (await self.is_show_on(data)):
             return [[]]
 
-        n_page_buttons = self.width * self.height
-        page = max(1 if data.get(self.name, None) is None else data[self.name], 1)
-        start = (page - 1) * n_page_buttons
-
         # Собираем объект группы кнопок Telegram
         buttons = [[]]
         col = 0
         row = 0
         count_buttons = 0
-        for button in self.buttons[start:start + n_page_buttons]:
+        show_buttons = []
+        for button in self.buttons:
             # Если when в ключах data, то делаем проверку
             if button.show_on in data.keys():
                 # Если when = False, не собираем кнопку
                 if not data[button.show_on]:
                     continue
+            show_buttons.append(button)
 
+        n_page_buttons = self.width * self.height
+        page = max(1 if data.get(self.name, None) is None else data[self.name], 1)
+        start = (page - 1) * n_page_buttons
+        end = start + n_page_buttons
+
+        for button in show_buttons[start:end]:
             button_obj = await button.assemble(data=data, **kwargs)
             if button_obj is not None:
                 if col % self.width == 0 and col != 0:
@@ -55,11 +59,11 @@ class Panel(Widget):
                 col += 1
                 count_buttons += 1
 
-        last_page = len(self.buttons) // n_page_buttons
-        last_page = last_page + 1 if (len(self.buttons) % n_page_buttons) > 0 else last_page
+        last_page = len(show_buttons) // n_page_buttons
+        last_page = last_page + 1 if (len(show_buttons) % n_page_buttons) > 0 else last_page
 
         # Формируем кнопки управления
-        if (len(self.buttons) > (self.width * self.height)) and (not self.hide_control_buttons) and self.name:
+        if (len(show_buttons) > (self.width * self.height)) and (not self.hide_control_buttons) and self.name:
             if page == 1:
                 controls = [
                     InlineKeyboardButton(text="→", callback_data=f"__panel__:{page + 1}:{self.name}"),

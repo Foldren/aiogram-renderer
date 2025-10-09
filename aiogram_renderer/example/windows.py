@@ -16,6 +16,10 @@ main_window = Window(
         Button("test3", "test"),
         Button("test4", "test"),
         Button("test5", "test"),
+        Button("test6", "test"),
+        Button("test7", "test"),
+        Button("test8", "test"),
+        Button("test9", "test"),
         lift_control_buttons=True,
         name="Panel1",
         width=2

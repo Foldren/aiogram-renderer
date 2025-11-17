@@ -1,8 +1,8 @@
 # aiogram-renderer
-[![versions](https://badgen.net/badge/python/3.9+?color=green)](https://github.com/Foldren/aiogram-renderer)
-[![license](https://badgen.net/badge/license/Apache-2.0?color=green)](https://github.com/Foldren/aiogram-renderer/blob/master/LICENSE)
-[![license](https://badgen.net/badge/pypl/v1.3.7?color=blue)](https://pypi.org/project/aiogram-renderer)
-[![badge](https://github.com/Foldren/aiogram-renderer/blob/master/aiogram_renderer/test.svg)](https://t.me/tribute/app?startapp=dzwH)
+[![](https://raw.githubusercontent.com/Foldren/aiogram-renderer/refs/heads/master/aiogram_renderer/badges/python.svg)](https://github.com/Foldren/aiogram-renderer)
+[![](https://raw.githubusercontent.com/Foldren/aiogram-renderer/refs/heads/master/aiogram_renderer/badges/license.svg)](https://github.com/Foldren/aiogram-renderer/blob/master/LICENSE)
+[![](https://raw.githubusercontent.com/Foldren/aiogram-renderer/refs/heads/master/aiogram_renderer/badges/pypl.svg)](https://pypi.org/project/aiogram-renderer)
+[![](https://raw.githubusercontent.com/Foldren/aiogram-renderer/refs/heads/master/aiogram_renderer/badges/donate.svg)](https://t.me/tribute/app?startapp=dzwH)
 
 ## О проекте
 Библиотека создана для того чтобы ее можно было использовать вместе с aiogram, а не вместо aiogram. Реализованы

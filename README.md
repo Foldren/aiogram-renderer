@@ -2,7 +2,7 @@
 [![versions](https://badgen.net/badge/python/3.9+?color=green)](https://github.com/Foldren/aiogram-renderer)
 [![license](https://badgen.net/badge/license/Apache-2.0?color=green)](https://github.com/Foldren/aiogram-renderer/blob/master/LICENSE)
 [![license](https://badgen.net/badge/pypl/v1.3.7?color=blue)](https://pypi.org/project/aiogram-renderer)
-[![badge](https://badgen.net/badge/_/Donate?color=yellow&icon=ruby&label)](https://t.me/foldren_support_donat_bot)
+[![badge](https://badgen.net/badge/_/Donate?color=yellow&icon=ruby&label)](https://t.me/tribute/app?startapp=dzwH)
 
 ## О проекте
 Библиотека создана для того чтобы ее можно было использовать вместе с aiogram, а не вместо aiogram. Реализованы
@@ -10,7 +10,7 @@
 
 #### Поддержка разработчика
 
-[<img src="https://i2.wp.com/miro.medium.com/1*D-JJemrcn63kKj3lPBwZ5w.png" width=130>](https://t.me/foldren_support_donat_bot)
+[<img src="https://i2.wp.com/miro.medium.com/1*D-JJemrcn63kKj3lPBwZ5w.png" width=130>](https://t.me/tribute/app?startapp=dzwH)
 
 ## Функции
 aiogram-renderer включает в себя:

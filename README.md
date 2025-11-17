@@ -10,7 +10,7 @@
 
 #### Поддержка разработчика
 
-[<img src="https://i2.wp.com/miro.medium.com/1*D-JJemrcn63kKj3lPBwZ5w.png" width=200>](https://t.me/tribute/app?startapp=dzwH)
+[<img src="https://raw.githubusercontent.com/Foldren/aiogram-renderer/refs/heads/master/aiogram_renderer/badges/tribute.svg" width=200>](https://t.me/tribute/app?startapp=dzwH)
 
 ## Функции
 aiogram-renderer включает в себя:

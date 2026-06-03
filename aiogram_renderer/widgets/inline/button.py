@@ -1,8 +1,6 @@
 from typing import Any
 from aiogram.fsm.state import State
-from aiogram.types import InlineKeyboardButton
-from pyrogram.types import WebAppInfo
-
+from aiogram.types import InlineKeyboardButton, WebAppInfo
 from aiogram_renderer.components.enums import RenderMode
 from aiogram_renderer.widgets.widget import Widget
 

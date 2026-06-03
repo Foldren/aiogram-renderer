@@ -1,6 +1,8 @@
 from typing import Any
 from aiogram.fsm.state import State
 from aiogram.types import InlineKeyboardButton
+from pyrogram.types import WebAppInfo
+
 from aiogram_renderer.components.enums import RenderMode
 from aiogram_renderer.widgets.widget import Widget
 
@@ -71,10 +73,11 @@ class ComeTo(Button):
 
 
 class Url(Button):
-    __slots__ = ("url",)
+    __slots__ = ("url", "web_app")
 
-    def __init__(self, text: str, url: str, data: str = None, show_on: str = None):
+    def __init__(self, text: str, url: str, web_app: bool = False, data: str = None, show_on: str = None):
         self.url = url
+        self.web_app = web_app
         super().__init__(text=text, data=data, show_on=show_on)
 
     async def assemble(self, data: dict[str, Any], **kwargs) -> InlineKeyboardButton | None:
@@ -95,7 +98,12 @@ class Url(Button):
             if "{" + key + "}" in url:
                 url = url.replace("{" + key + "}", str(value))
 
-        return InlineKeyboardButton(text=text, url=url, callback_data=btn_data)
+        if self.web_app:
+            btn = InlineKeyboardButton(text=text, web_app=WebAppInfo(url=url), callback_data=btn_data)
+        else:
+            btn = InlineKeyboardButton(text=text, url=url, callback_data=btn_data)
+
+        return btn
 
 
 class Radio(Button):
